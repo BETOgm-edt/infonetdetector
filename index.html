@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu IP e Dados de Navegação</title>
+    <!-- Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'azul-moderno': '#005B96',
+                        'azul-claro': '#03396c',
+                        'branco-gelo': '#F4F7F6',
+                        'texto-escuro': '#2C3E50'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos adicionais para garantir suavidade */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #F4F7F6; /* Branco Gelo */
+            color: #2C3E50;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Classe para esconder scrollbar mantendo funcionalidade */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Cabeçalho Principal -->
+    <header class="bg-azul-moderno text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-network-wired text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight">InfoNet <span class="font-light text-blue-200">Detector</span></h1>
+            </div>
+            <button onclick="carregarDados()" class="bg-white text-azul-moderno px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">Atualizar Dados</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Espaço de Anúncio Topo (Não intrusivo) -->
+    <div class="w-full bg-gray-200 border-b border-gray-300 py-2 text-center text-gray-500 text-xs sm:text-sm">
+        <div class="max-w-3xl mx-auto h-[50px] md:h-[90px] border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-100 rounded">
+            <span>Espaço para Anúncio (ex: Google AdSense 728x90 ou Responsivo)</span>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Coluna da Esquerda / Centro (Dados) -->
+        <div class="w-full lg:w-3/4 space-y-6">
+            
+            <!-- Card de Destaque: IP -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-azul-moderno opacity-5 rounded-bl-full"></div>
+                <h2 class="text-lg font-semibold text-gray-500 mb-2 uppercase tracking-wider text-sm">Seu Endereço IP Público</h2>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                    <div id="ip-display" class="text-4xl sm:text-5xl font-bold text-azul-moderno tracking-tight">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl text-gray-300"></i>
+                    </div>
+                    <button onclick="copiarIP()" class="bg-azul-moderno text-white hover:bg-azul-claro transition px-6 py-3 rounded-xl font-medium shadow-md flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <i class="fa-regular fa-copy"></i> Copiar IP
+                    </button>
+                </div>
+                <p id="ip-message" class="text-green-600 text-sm mt-3 hidden font-medium"><i class="fa-solid fa-check-circle"></i> IP copiado com sucesso!</p>
+            </div>
+
+            <!-- Grade de Informações Adicionais -->
+            <h3 class="text-xl font-bold text-texto-escuro pt-4 border-b pb-2">Informações Detalhadas do Sistema</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="info-grid">
+                <!-- Os cards serão injetados via JavaScript aqui -->
+            </div>
+
+        </div>
+
+        <!-- Coluna da Direita (Sidebar de Anúncios) -->
+        <aside class="w-full lg:w-1/4 space-y-6">
+            <div class="sticky top-24 space-y-6">
+                <!-- Anúncio Sidebar 1 -->
+                <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl h-[250px] flex flex-col items-center justify-center text-gray-500 text-sm p-4 text-center">
+                    <i class="fa-solid fa-rectangle-ad text-3xl mb-2 text-gray-400"></i>
+                    <p>Anúncio Retangular<br>(ex: 300x250)</p>
+                    <p class="text-xs mt-2 text-gray-400">Ideal para gerar receita sem bloquear a leitura.</p>
+                </div>
+
+                <!-- Anúncio Sidebar 2 (Escondido no mobile, aparece no desktop) -->
+                <div class="hidden lg:flex bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl h-[600px] flex-col items-center justify-center text-gray-500 text-sm p-4 text-center">
+                    <i class="fa-solid fa-rectangle-ad text-3xl mb-2 text-gray-400"></i>
+                    <p>Anúncio Vertical<br>(ex: 300x600)</p>
+                    <p class="text-xs mt-2 text-gray-400">Acompanha a rolagem da página na barra lateral.</p>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Espaço de Anúncio Rodapé -->
+    <div class="w-full bg-gray-200 border-t border-gray-300 py-4 mt-auto">
+        <div class="max-w-4xl mx-auto h-[90px] border-2 border-dashed border-gray-400 flex items-center justify-center bg-gray-100 rounded text-gray-500 text-sm">
+            <span>Anúncio de Rodapé (Excelente taxa de visualização em mobiles)</span>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="bg-azul-claro text-blue-100 py-6 text-center text-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>&copy; 2024 InfoNet Detector. Todos os dados são processados localmente e não são armazenados.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentIp = '';
+
+        // Função para identificar o nome do navegador de forma simplificada
+        function obterNomeNavegador() {
+            const ua = navigator.userAgent;
+            if (ua.includes("Firefox/")) return "Mozilla Firefox";
+            if (ua.includes("Edg/")) return "Microsoft Edge";
+            if (ua.includes("OPR/") || ua.includes("Opera/")) return "Opera";
+            if (ua.includes("Chrome/")) return "Google Chrome";
+            if (ua.includes("Safari/") && !ua.includes("Chrome")) return "Apple Safari";
+            return "Desconhecido";
+        }
+
+        // Função para formatar a linguagem
+        function obterIdioma() {
+            const lang = navigator.language || navigator.userLanguage;
+            try {
+                const displayNames = new Intl.DisplayNames([lang], { type: 'language' });
+                return displayNames.of(lang).charAt(0).toUpperCase() + displayNames.of(lang).slice(1) + ` (${lang})`;
+            } catch (e) {
+                return lang;
+            }
+        }
+
+        // Função principal para carregar dados
+        async function carregarDados() {
+            const grid = document.getElementById('info-grid');
+            const ipDisplay = document.getElementById('ip-display');
+            
+            // Limpar grid e mostrar loading no IP
+            grid.innerHTML = '';
+            ipDisplay.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-2xl text-azul-moderno"></i>';
+
+            let geoData = { city: 'Desconhecido', region: '', country: '', org: 'Desconhecido' };
+            
+            // Tentar obter o IP e dados de geolocalização via API pública (GeoJS)
+            try {
+                const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                const data = await response.json();
+                currentIp = data.ip;
+                geoData = {
+                    city: data.city || 'Desconhecido',
+                    region: data.region || '',
+                    country: data.country || '',
+                    org: data.organization || 'Desconhecido'
+                };
+                ipDisplay.textContent = currentIp;
+            } catch (error) {
+                console.error("Erro ao buscar IP:", error);
+                currentIp = 'Não foi possível detectar';
+                ipDisplay.innerHTML = '<span class="text-red-500 text-2xl">Falha na conexão</span>';
+            }
+
+            // Compilar todas as informações úteis do cliente
+            const infos = [
+                {
+                    icone: 'fa-location-dot',
+                    titulo: 'Localização Aproximada',
+                    valor: `${geoData.city}${geoData.region ? ', ' + geoData.region : ''} - ${geoData.country}`,
+                    cor: 'text-red-500',
+                    bg: 'bg-red-50'
+                },
+                {
+                    icone: 'fa-server',
+                    titulo: 'Provedor (ISP)',
+                    valor: geoData.org,
+                    cor: 'text-purple-600',
+                    bg: 'bg-purple-50'
+                },
+                {
+                    icone: 'fa-compass',
+                    titulo: 'Navegador',
+                    valor: obterNomeNavegador(),
+                    cor: 'text-orange-500',
+                    bg: 'bg-orange-50'
+                },
+                {
+                    icone: 'fa-desktop',
+                    titulo: 'Sistema Operacional',
+                    valor: navigator.platform || "Desconhecido",
+                    cor: 'text-gray-700',
+                    bg: 'bg-gray-100'
+                },
+                {
+                    icone: 'fa-expand',
+                    titulo: 'Resolução da Tela',
+                    valor: `${window.screen.width} x ${window.screen.height} pixels`,
+                    cor: 'text-blue-500',
+                    bg: 'bg-blue-50'
+                },
+                {
+                    icone: 'fa-language',
+                    titulo: 'Idioma do Sistema',
+                    valor: obterIdioma(),
+                    cor: 'text-teal-600',
+                    bg: 'bg-teal-50'
+                },
+                {
+                    icone: 'fa-clock',
+                    titulo: 'Fuso Horário',
+                    valor: Intl.DateTimeFormat().resolvedOptions().timeZone || "Desconhecido",
+                    cor: 'text-indigo-500',
+                    bg: 'bg-indigo-50'
+                },
+                {
+                    icone: 'fa-cookie-bite',
+                    titulo: 'Cookies Ativos',
+                    valor: navigator.cookieEnabled ? "Sim" : "Não",
+                    cor: navigator.cookieEnabled ? 'text-green-600' : 'text-red-500',
+                    bg: navigator.cookieEnabled ? 'bg-green-50' : 'bg-red-50'
+                }
+            ];
+
+            // Renderizar os cards
+            infos.forEach((info, index) => {
+                const card = document.createElement('div');
+                card.className = `bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-start gap-4 fade-in`;
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                card.innerHTML = `
+                    <div class="${info.bg} ${info.cor} w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid ${info.icone} text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide">${info.titulo}</h4>
+                        <p class="text-base font-medium text-texto-escuro mt-1 break-words">${info.valor}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Função para copiar o IP
+        function copiarIP() {
+            if(!currentIp || currentIp === 'Não foi possível detectar') return;
+
+            // Criar um input temporário, pois navigator.clipboard pode falhar em iframes/ambientes sem https
+            const tempInput = document.createElement("input");
+            tempInput.value = currentIp;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            const msg = document.getElementById('ip-message');
+            msg.classList.remove('hidden');
+            setTimeout(() => {
+                msg.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Iniciar ao carregar a página
+        window.onload = carregarDados;
+    </script>
+</body>
+</html>
